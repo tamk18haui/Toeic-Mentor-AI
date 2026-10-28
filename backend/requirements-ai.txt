@@ -1,0 +1,7 @@
+# Optional local CPU-only phoneme scorers for IPA practice.
+# Install after base requirements when you want to use E2E-GOP.
+-r requirements.txt
+torch>=2.6,<3
+transformers==5.18.0
+huggingface-hub>=1.31,<2
+safetensors>=0.8

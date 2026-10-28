@@ -1,0 +1,48 @@
+.env
+.venv/
+.testenv/
+.npm-cache/
+__pycache__/
+*.pyc
+frontend/node_modules/
+frontend/dist/
+backend/uploads/
+*.log
+*.db
+
+# Environment / Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Node / React / Vite
+node_modules/
+dist/
+build/
+coverage/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Local runtime data
+uploads/
+temp/
+tmp/
+logs/
+*.log
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,4 @@
+# Offline-first TOEIC Speaking assessment. CPU only, downloads weights on first use.
+# E2E-GOP ~1.3 GB plus Whisper ASR. Wav2Vec2 phoneme verifier optional.
+-r requirements-ai.txt
+faster-whisper>=1.1,<3
