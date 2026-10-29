@@ -11,6 +11,12 @@ import Writing from './pages/Writing.jsx'
 import WritingPractice from './pages/WritingPractice.jsx'
 import WritingMock from './pages/WritingMock.jsx'
 import StaticCourse from './pages/StaticCourse.jsx'
+import {VocabularyList,VocabularyDetail} from './pages/Vocabulary.jsx'
+import {GrammarList,GrammarDetail} from './pages/Grammar.jsx'
+import {ExamDemo} from './pages/Exams.jsx'
+import ExamCatalog from './pages/ExamCatalog.jsx'
+import ExamRoom from './pages/ExamRoom.jsx'
+import Admin from './pages/Admin.jsx'
 import {Footer} from './components/Footer.jsx'
 
 const UserContext=createContext(null)
@@ -33,15 +39,16 @@ function AuthModal({close,login}){
 export default function App(){
   const [session,setCurrentSession]=useState(getSession),[showAuth,setShowAuth]=useState(false),[mobileOpen,setMobileOpen]=useState(false)
   const location=useLocation()
+  const inExamRoom=/^\/exams\/[^/]+$/.test(location.pathname)&&location.pathname!=='/exams/demo'
   useEffect(()=>{window.scrollTo(0,0);setMobileOpen(false)},[location.pathname])
   const login=value=>{setSession(value);setCurrentSession(value)}
   const logout=()=>{setSession(null);setCurrentSession(null)}
   const closeMenu=()=>setMobileOpen(false)
   return <UserContext.Provider value={{session,login,logout,openAuth:()=>setShowAuth(true)}}><div className="app-shell">
-    <header className="site-header"><div className="container header-inner"><Link className="brand" to="/"><span className="brand-mark"><GraduationCap size={23}/></span><span>toeic<span className="brand-accent">studio</span><small>LEARN. SPEAK. GROW.</small></span></Link>
-      <nav className={`site-nav ${mobileOpen?'mobile-open':''}`} aria-label="Điều hướng chính"><NavLink onClick={closeMenu} to="/" end>Tổng quan</NavLink><NavLink onClick={closeMenu} to="/grammar">Ngữ pháp</NavLink><NavLink onClick={closeMenu} to="/listening">Luyện nghe</NavLink><NavLink onClick={closeMenu} to="/reading">Luyện đọc</NavLink><Dropdown label="Luyện nói" entries={menus.speaking} active={location.pathname==='/ipa'||location.pathname.startsWith('/speaking')} onClose={closeMenu}/><Dropdown label="Luyện viết" entries={menus.writing} active={location.pathname.startsWith('/writing')} onClose={closeMenu}/></nav>
+    {!inExamRoom&&<header className="site-header"><div className="container header-inner"><Link className="brand" to="/"><span className="brand-mark"><GraduationCap size={23}/></span><span>toeic<span className="brand-accent">studio</span><small>LEARN. SPEAK. GROW.</small></span></Link>
+      <nav className={`site-nav ${mobileOpen?'mobile-open':''}`} aria-label="Điều hướng chính"><NavLink onClick={closeMenu} to="/" end>Tổng quan</NavLink><NavLink onClick={closeMenu} to="/vocabulary">Từ vựng</NavLink><NavLink onClick={closeMenu} to="/grammar">Ngữ pháp</NavLink><NavLink onClick={closeMenu} to="/exams">Luyện đề</NavLink><NavLink onClick={closeMenu} to="/listening">Luyện nghe</NavLink><Dropdown label="Luyện nói" entries={menus.speaking} active={location.pathname==='/ipa'||location.pathname.startsWith('/speaking')} onClose={closeMenu}/><Dropdown label="Luyện viết" entries={menus.writing} active={location.pathname.startsWith('/writing')} onClose={closeMenu}/></nav>
       <div className="header-actions"><span className="streak-pill"><Flame size={17}/> Mỗi ngày một chút</span>{session?<div className="avatar-menu"><span className="avatar-circle">{session.user.name.slice(0,1).toUpperCase()}</span><span className="header-name">{session.user.name.split(' ').at(-1)}</span><button className="icon-button" title="Đăng xuất" onClick={logout}><LogOut size={17}/></button></div>:<button className="btn btn-primary header-login" onClick={()=>setShowAuth(true)}>Đăng nhập <ArrowRight size={16}/></button>}<button className="mobile-toggle" aria-label="Mở menu" onClick={()=>setMobileOpen(v=>!v)}>{mobileOpen?<X size={23}/>:<Menu size={23}/>}</button></div>
-    </div></header>
-    <main className="main-area"><Routes><Route path="/" element={<Dashboard/>}/><Route path="/ipa" element={<IPA/>}/><Route path="/ipa/:phoneId" element={<IPA/>}/><Route path="/speaking" element={<Speaking/>}/><Route path="/speaking/practice/:partId" element={<SpeakingPractice/>}/><Route path="/speaking/mock" element={<SpeakingMock/>}/><Route path="/writing" element={<Writing/>}/><Route path="/writing/practice/:partId" element={<WritingPractice/>}/><Route path="/writing/mock" element={<WritingMock/>}/><Route path="/grammar" element={<StaticCourse type="grammar"/>}/><Route path="/listening" element={<StaticCourse type="listening"/>}/><Route path="/reading" element={<StaticCourse type="reading"/>}/><Route path="*" element={<Navigate to="/" replace/>}/></Routes></main>
-    <Footer/>{showAuth&&<AuthModal close={()=>setShowAuth(false)} login={login}/>}</div></UserContext.Provider>
+    </div></header>}
+    <main className="main-area"><Routes><Route path="/" element={<Dashboard/>}/><Route path="/ipa" element={<IPA/>}/><Route path="/ipa/:phoneId" element={<IPA/>}/><Route path="/speaking" element={<Speaking/>}/><Route path="/speaking/practice/:partId" element={<SpeakingPractice/>}/><Route path="/speaking/mock" element={<SpeakingMock/>}/><Route path="/writing" element={<Writing/>}/><Route path="/writing/practice/:partId" element={<WritingPractice/>}/><Route path="/writing/mock" element={<WritingMock/>}/><Route path="/vocabulary" element={<VocabularyList/>}/><Route path="/vocabulary/:id" element={<VocabularyDetail/>}/><Route path="/grammar" element={<GrammarList/>}/><Route path="/grammar/:slug" element={<GrammarDetail/>}/><Route path="/exams" element={<ExamCatalog/>}/><Route path="/exams/demo" element={<ExamDemo/>}/><Route path="/exams/:id" element={<ExamRoom/>}/><Route path="/admin" element={<Admin/>}/><Route path="/listening" element={<StaticCourse type="listening"/>}/><Route path="/reading" element={<StaticCourse type="reading"/>}/><Route path="*" element={<Navigate to="/" replace/>}/></Routes></main>
+    {!inExamRoom&&<Footer/>}{showAuth&&<AuthModal close={()=>setShowAuth(false)} login={login}/>}</div></UserContext.Provider>
 }

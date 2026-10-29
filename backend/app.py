@@ -20,6 +20,9 @@ from sqlalchemy.orm import Session
 
 from .auth import create_token, current_user, hash_password, normalize_email, verify_password
 from .database import LessonProgress, PracticeAttempt, SessionLocal, User, engine as db_engine, get_db, init_db
+from .content_service import router as content_router, seed_content
+from .admin_service import router as admin_router, seed_admin
+from .exams_service import router as exams_router, media_router
 
 ROOT = Path(__file__).resolve().parent
 load_dotenv(ROOT / '.env')
@@ -29,7 +32,11 @@ logging.basicConfig(level=logging.INFO)
 os.environ.setdefault('TOKENIZERS_PARALLELISM', 'false')
 
 app = FastAPI(title='TOEIC Studio API', version='0.1.0', docs_url='/api/docs')
-app.add_middleware(CORSMiddleware, allow_origins=os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173').split(','), allow_credentials=True, allow_methods=['GET','POST','OPTIONS'], allow_headers=['Content-Type','Authorization'])
+app.add_middleware(CORSMiddleware, allow_origins=os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173').split(','), allow_credentials=True, allow_methods=['GET','POST','PUT','PATCH','OPTIONS'], allow_headers=['Content-Type','Authorization'])
+app.include_router(content_router)
+app.include_router(admin_router)
+app.include_router(exams_router)
+app.include_router(media_router)
 model_lock=Lock()
 
 
@@ -43,6 +50,9 @@ async def unavailable_mysql(request, exc):
 def startup():
     try:
         init_db()
+        with SessionLocal() as db:
+            seed_content(db)
+            seed_admin(db)
         logger.info('MySQL learning tables available')
     except Exception as exc:
         logger.warning('Database offline: %s. Public pages and pronunciation still work.', type(exc).__name__)
@@ -55,7 +65,7 @@ class AuthRequest(BaseModel):
 
 
 class AttemptRequest(BaseModel):
-    mode:str = Field(pattern='^(ipa|speaking_practice|speaking_mock|writing_practice|writing_mock)$')
+    mode:str = Field(pattern='^(ipa|speaking_practice|speaking_mock|writing_practice|writing_mock|vocabulary_quiz|grammar_review|reading_demo|reading_full)$')
     part:str = Field(max_length=50)
     question_ref:str = Field(max_length=80)
     score:float | None = Field(default=None,ge=0,le=200)

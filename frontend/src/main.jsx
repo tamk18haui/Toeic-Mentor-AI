@@ -6,4 +6,8 @@ import './styles.css'
 import './styles-lessons.css'
 import './styles-exams.css'
 import './styles-speaking-score.css'
+import './styles-learning.css'
+import './styles-exam-player.css'
+import './styles-exam-room.css'
+import './styles-admin.css'
 createRoot(document.getElementById('root')).render(<React.StrictMode><BrowserRouter><App/></BrowserRouter></React.StrictMode>)

@@ -46,3 +46,6 @@ logs/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Local backups created by the one-button content/UI patch installer.
+_backup_toeic_mentor_content_*/
