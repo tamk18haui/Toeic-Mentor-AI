@@ -1,0 +1,4 @@
+# Writing-only additive dependencies, all local. Existing project requirements still apply.
+httpx>=0.27,<1
+pydantic>=2.9,<3
+language-tool-python>=2.9,<3

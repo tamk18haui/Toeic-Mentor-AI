@@ -1,0 +1,14 @@
+.writing-rag-panel{margin-top:18px;padding:18px;border:1px solid rgba(100,116,139,.27);border-radius:16px;background:linear-gradient(135deg,rgba(12,30,57,.045),rgba(50,115,210,.025))}
+.writing-rag-head h4{margin:5px 0 16px;font-size:17px}
+.writing-rag-eyebrow{font-size:11px;font-weight:800;letter-spacing:.12em;color:#377ac7}
+.writing-rag-checks{display:grid;gap:10px}
+.writing-rag-check{border:1px solid rgba(99,115,137,.2);border-radius:11px;padding:12px;background:var(--card-bg,#fff);}
+.writing-rag-check-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.writing-rag-state{font-size:11px;font-weight:750;white-space:nowrap;border-radius:7px;padding:4px 8px;background:#eef1f5;color:#4f5f70}
+.writing-rag-state.met{background:#e2f5ed;color:#146442}.writing-rag-state.partial,.writing-rag-state.uncertain{background:#fff2d9;color:#805500}.writing-rag-state.missing{background:#ffe8e5;color:#973f36}
+.writing-rag-check blockquote{margin:9px 0 4px;padding:7px 10px;border-left:3px solid #77a5e9;background:rgba(113,148,204,.07);font-size:13px}
+.writing-rag-check p,.writing-rag-reason p{margin:7px 0 0;line-height:1.55;font-size:13px}
+.writing-rag-reason,.writing-rag-warnings{padding:12px 2px;border-bottom:1px solid rgba(99,115,137,.16)}
+.writing-rag-warnings{color:#9d5417}.writing-rag-warnings p{margin:5px 0;font-size:13px}
+.writing-rag-source{display:flex;flex-direction:column;gap:6px;margin-top:13px;font-size:12px;line-height:1.5}
+.writing-rag-source a{color:#2d6cbe;text-decoration:underline}.writing-rag-source span{color:#64748b}

@@ -1,0 +1,59 @@
+{
+  "reference": {
+    "title": "TOEIC Speaking and Writing Examinee Handbook, ETS",
+    "url": "https://www.ets.org/content/dam/ets-org/pdfs/toeic/toeic-speaking-writing-examinee-handbook.pdf",
+    "usage": "Author-written Vietnamese summaries of ETS scoring descriptors, not official scores or verbatim reproduced rubric.",
+    "version": "2026-10-31-review"
+  },
+  "parts": {
+    "1": {
+      "label": "Write a sentence based on a picture",
+      "page": 27,
+      "max_score": 3,
+      "directions": "One sentence based on the attached image using BOTH given words or phrases. Inflections may change.",
+      "levels": {
+        "3": "One grammatical sentence, both required keywords in appropriate forms, consistent with the image.",
+        "2": "One or more sentences relevant to image with both keywords, but grammatical or word-form errors not seriously obscuring meaning.",
+        "1": "Noticeable issues such as omitted keywords, content inconsistent with image, or errors interfering with meaning.",
+        "0": "Blank, not meaningful English, or only keystroke characters."
+      },
+      "special_checks": ["two_keyword_use", "image_consistency", "sentence_grammar"]
+    },
+    "2": {
+      "label": "Respond to a written request (email)",
+      "page": 29,
+      "max_score": 4,
+      "directions": "Holistically assess response to requested email tasks, organization, appropriate tone, and accuracy. Omitting ONE task does not automatically force score 2.",
+      "levels": {
+        "4": "Effectively addresses all required tasks across coherent sentences; appropriate tone; isolated errors do not obscure meaning.",
+        "3": "Mostly successful yet may omit or incompletely address ONE task; some organization and awareness of audience; noticeable errors possible.",
+        "2": "Several weaknesses: may address only one task or have two or more tasks incompletely addressed; links or audience awareness weak; errors may obscure more than one sentence.",
+        "1": "Seriously flawed: conveys little relevant information, often no tasks completed, major coherence or language problems.",
+        "0": "Blank, irrelevant, merely copies the prompt, or not meaningful English."
+      },
+      "special_checks": ["extract_explicit_required_tasks", "quote_evidence_from_original", "tone", "organization", "errors_obscuring_meaning"]
+    },
+    "3": {
+      "label": "Write an opinion essay",
+      "page": 31,
+      "max_score": 5,
+      "directions": "Evaluate opinion and task relevance, reasons/examples, organization, grammatical range and vocabulary. Around 300 words is an ETS effective-response guideline, not an automatic word-count cutoff.",
+      "levels": {
+        "5": "Clearly answers the topic; well-developed reasoning/examples; coherent progression; varied and apt language with at most minor errors.",
+        "4": "Addresses topic well with generally sufficient reasons and coherent structure; some ideas may be underdeveloped or language errors noticeable.",
+        "3": "Partly developed support and some coherence; inconsistent sentence formation or vocabulary may occasionally obscure meaning.",
+        "2": "Limited development, weak organization, insufficient examples or accumulating grammar/word-choice errors.",
+        "1": "Seriously disorganized or underdeveloped; little on-topic detail, major or frequent grammatical errors.",
+        "0": "Blank, irrelevant, copies prompt, or not meaningful English."
+      },
+      "special_checks": ["position", "reasons", "examples", "coherence", "grammar_and_vocabulary"]
+    }
+  },
+  "guides": [
+    {"id": "email-evidence", "part": 2, "keywords": ["email", "request", "confirm", "reply", "suggest", "available", "information"], "content": "List each separate request from the prompt and quote exact supporting fragments from the original response. A stated window such as 'from 9 AM to 11 AM' is a specific time interval; do not demand unnecessary precision. Do not treat a corrected example response as the original."},
+    {"id": "email-tone", "part": 2, "keywords": ["email", "dear", "best regards", "workshop"], "content": "Do not over-penalize polite, natural workplace language. Distinguish stylistic recommendations from true grammatical errors. Missing one requested item is compatible with score 3 when the rest of the response is successful."},
+    {"id": "grammar-integrity", "part": 0, "keywords": ["grammar", "writing", "sentence", "essay", "email"], "content": "Cite exact source spans for every claimed error. 'Look forward to' followed by a verb uses the -ing form. Do not invent meeting times or other concrete facts in the improved answer."},
+    {"id": "essay-support", "part": 3, "keywords": ["reason", "opinion", "example", "agree", "disagree", "prefer"], "content": "Distinguish an unsupported position from a developed argument. Give feedback on specificity, relevance, paragraph transitions, and language quality, without automatic fixed-point deductions."},
+    {"id": "picture-grounding", "part": 1, "keywords": ["picture", "photo", "image", "sentence"], "content": "The attached image is the visual source of truth. Reject claims not visibly supported. Do not guess hidden facts such as names, dates, locations, or occupations. Both supplied keywords should appear in appropriate forms."}
+  ]
+}

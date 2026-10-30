@@ -203,47 +203,50 @@ def pronunciation_score(file:UploadFile=File(...),word:str=Form(...),verify_phon
         file.file.close();model_lock.release()
 
 
+@app.get('/api/writing/status')
+def writing_ai_status():
+    from .writing.ollama_client import status
+    from .writing.rag import retrieve
+    from importlib.util import find_spec
+    return {'ollama': status(), 'rag': {'ready':True,'source':retrieve(2)['citation']},
+            'language_tool_installed':find_spec('language_tool_python') is not None,
+            'practice_only':True}
+
+
 @app.post('/api/writing/grade')
 def grade_writing(part:int=Form(...),answer:str=Form(...),question:str=Form(''),keywords:str=Form(''),picture:UploadFile | None=File(None)):
-    if part not in (1,2,3) or not 0<len(answer.strip())<=12000:raise HTTPException(422,'Phần thi hoặc độ dài bài viết không hợp lệ.')
-    if not os.getenv('GEMINI_API_KEY'):
-        raise HTTPException(503,'Chưa cấu hình GEMINI_API_KEY trong backend/.env. Bạn vẫn có thể luyện viết và tự đối chiếu bài mẫu.')
-    from .writing.grading import check_grammar_local,grade_with_gemini
-    image=None;mime=None
-    if part==1:
+    """Grounded local Qwen3-VL TOEIC writing feedback; no Gemini calls."""
+    from .writing.grading import check_grammar_local, grade_with_local
+    from .writing.ollama_client import WritingModelError
+    if part not in (1,2,3) or not 0 < len(answer.strip()) <= 12000:
+        raise HTTPException(422,'Part Writing hoac do dai bai viet khong hop le.')
+    image = None
+    mime = None
+    if part == 1:
         if not picture or picture.content_type not in {'image/jpeg','image/png','image/webp'}:
-            raise HTTPException(422,'Cần ảnh đề bài (PNG/JPEG/WebP) để chấm đúng nội dung.')
-        image=picture.file.read(5*1024*1024+1)
-        if len(image)>5*1024*1024:raise HTTPException(413,'Ảnh không vượt quá 5MB.')
-        mime=picture.content_type
+            raise HTTPException(422,'Writing Part 1 can anh de bai JPEG/PNG/WebP.')
+        image = picture.file.read(5*1024*1024+1)
+        if len(image) > 5*1024*1024:
+            raise HTTPException(413,'Anh qua 5MB.')
+        mime = picture.content_type
     try:
-        result=grade_with_gemini(part,answer,question,keywords,image,mime)
-    except ValueError as exc:raise HTTPException(422,str(exc)) from exc
+        result = grade_with_local(part,answer,question,keywords,image,mime)
+    except ValueError as exc:
+        raise HTTPException(422,str(exc)) from exc
+    except WritingModelError as exc:
+        logger.warning('Local Writing inference not ready: %s',type(exc).__name__)
+        raise HTTPException(503,str(exc)) from exc
     except Exception as exc:
-        reason=str(exc).lower()
-        if '503' in reason or 'service_unavailable' in reason or 'high demand' in reason:
-            logger.warning('Gemini busy: %s', type(exc).__name__)
-            raise HTTPException(503,'Gemini đang quá tải tạm thời (HTTP 503). Bài viết vẫn giữ nguyên; vui lòng đợi ít phút rồi nhấn Chấm lại. Đây không phải lỗi API key hoặc bài viết.') from exc
-        logger.exception('Writing model failure: %s',type(exc).__name__)
-        if 'legacy interactions api schema' in reason or ('google-genai' in reason and '2.0' in reason):
-            detail='SDK Gemini đã cũ. Trong thư mục dự án, chạy: .\\.venv\\Scripts\\python.exe -m pip install --upgrade "google-genai>=2.0.0,<3.0.0". Sau đó khởi động lại FastAPI.'
-        elif any(term in reason for term in ('quota', 'rate limit', 'resource_exhausted', '429')):
-            detail='Đã đạt giới hạn Gemini API. Kiểm tra hạn mức miễn phí và thử lại sau.'
-        elif any(term in reason for term in ('api key', 'api_key', 'permission_denied', '401', '403')):
-            detail='Gemini từ chối xác thực. Kiểm tra GEMINI_API_KEY trong backend/.env.'
-        elif any(term in reason for term in ('model not found', 'model is not found', 'no longer available', '404')):
-            detail='Model Gemini không khả dụng với API key này. Kiểm tra GEMINI_MODEL trong backend/.env.'
-        else:
-            detail='Không thể kết nối AI chấm bài. Hãy xem lỗi chi tiết trong cửa sổ FastAPI; kiểm tra SDK Gemini, model và hạn mức miễn phí.'
-        raise HTTPException(502,detail) from exc
-    grammar,warning=check_grammar_local(answer)
+        logger.exception('Unexpected local Writing error')
+        raise HTTPException(503,'Writing AI chua phan tich duoc. Kiem tra Ollama va log FastAPI.') from exc
+    grammar, warning = check_grammar_local(answer)
     result.update({'grammar_matches':grammar,'grammar_warning':warning})
     return result
 
 
 @app.post('/api/speaking/grade')
 def grade_speaking_endpoint(file:UploadFile=File(...),part:str=Form(...),task_json:str=Form('{}'),picture:UploadFile | None=File(None)):
-    """On-demand local speech models; optional Gemini for content, not phonemes."""
+    """On-demand local Whisper / GOPT acoustics / Gemma semantics."""
     from .speaking_audio import SpeakingAudioError,prepare_speaking_audio
     from .speaking_grading import SPEAKING_PARTS,grade_speaking
     from .pronunciation.audio_utils import ALLOWED_SUFFIXES,MAX_UPLOAD_BYTES
